@@ -2,7 +2,7 @@
 
 # NAME
 
-Lingua::ZH::Jieba - Perl wrapper for CppJieba
+Lingua::ZH::Jieba - Perl wrapper for CppJieba (Chinese text segmentation)
 
 # SYNOPSIS
 
@@ -13,7 +13,7 @@ Lingua::ZH::Jieba - Perl wrapper for CppJieba
     # default cut
     my $words = $jieba->cut("他来到了网易杭研大厦");
 
-    # cut without hmm
+    # cut without HMM
     my $words_nohmm = $jieba->cut(
         "他来到了网易杭研大厦",
         { no_hmm => 1 } );
@@ -117,4 +117,4 @@ CppJieba is copyright by YanYi Wu under the MIT license. Visit
 
 The Perl extension of CppJieba is copyright (c) 2017 by Stephan Loyd.
 This is free software; you can redistribute it and/or modify it under the
-same terms as the Perl itself.
+same terms as Perl itself.

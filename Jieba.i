@@ -55,7 +55,7 @@ sub cut_for_search {
 
 
 package Lingua::ZH::Jieba;
-# ABSTRACT: Perl wrapper for CppJieba 
+# ABSTRACT: Perl wrapper for CppJieba (Chinese text segmentation)
 use 5.010;
 use strict;
 use warnings;
