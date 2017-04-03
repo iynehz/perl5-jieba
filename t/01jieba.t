@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use utf8;
 
-use File::Temp;
 use File::ShareDir qw(dist_file);
 use Lingua::ZH::Jieba;
 use Path::Tiny;
