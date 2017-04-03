@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/stphnlyd/perl5-jieba.svg?branch=master)](https://travis-ci.org/stphnlyd/perl5-jieba)
+
 # NAME
 
 Lingua::ZH::Jieba - Perl wrapper for CppJieba
