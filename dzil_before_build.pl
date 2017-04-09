@@ -1,10 +1,16 @@
 #!/usr/bin/env perl
 
+use strict;
+use warnings;
+
+use File::Copy;
+use File::Copy::Recursive qw(dircopy);
+use File::Path;
+
 # swig
 system("swig -c++ -perl5 -I./cppjieba/include -I. Jieba.i");
-system("mv Jieba.pm ./lib/Lingua/ZH/");
+move("Jieba.pm", "./lib/Lingua/ZH/");
 
 # share dir
-system("rm -rf ./share");
-mkdir("./share");
-system("cp -r cppjieba/dict ./share");
+rmtree("./share");
+dircopy("cppjieba/dict", "./share/dict");
