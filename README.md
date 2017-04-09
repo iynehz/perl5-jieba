@@ -7,30 +7,46 @@ Lingua::ZH::Jieba - Perl wrapper for CppJieba (Chinese text segmentation)
 # SYNOPSIS
 
     use Lingua::ZH::Jieba;
+
+    binmode STDOUT, ":utf8";
     
     my $jieba = Lingua::ZH::Jieba->new();
 
     # default cut
     my $words = $jieba->cut("他来到了网易杭研大厦");
+    print join('/', @$words), "\n";
+    # 他/来到/了/网易/杭研/大厦
 
     # cut without HMM
     my $words_nohmm = $jieba->cut(
         "他来到了网易杭研大厦",
         { no_hmm => 1 } );
+    print join('/', @$words_nohmm), "\n";
+    # 他/来到/了/网易/杭/研/大厦
 
     # cut all
     my $words_cutall = $jieba->cut(
         "我来到北京清华大学",
         { cut_all => 1 } );
+    print join('/', @$words_cutall), "\n";
+    # 我/来到/北京/清华/清华大学/华大/大学
 
     # cut for search
     my $words_cut4search = $jieba->cut_for_search(
         "小明硕士毕业于中国科学院计算所，后在日本京都大学深造" );
+    print join('/', @$words_cut4search), "\n";
+    # 小明/硕士/毕业/于/中国/科学/学院/科学院/中国科学院/计算/计算所/，/后/在/日本/京都/大学/日本京都大学/深造
 
     # insert user word
     my $words_before_insert = $jieba->cut("男默女泪");
+    print join('/', @$words_before_insert), "\n";
+    # 男默/女泪
+
     $jieba->insert_user_word("男默女泪");
+
     my $words_after_insert = $jieba->cut("男默女泪");
+    print join('/', @$words_after_insert), "\n";
+    # 男默女泪
 
 # DESCRIPTION
 
