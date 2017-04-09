@@ -6,19 +6,8 @@ cache:
   - C:\ProgramData\chocolatey\bin -> appveyor.yml
   - C:\ProgramData\chocolatey\lib -> appveyor.yml
 
-clone_script:
-  - ps: >-
-      if (-not $env:appveyor_pull_request_number) {
-        git clone -q --branch=$env:appveyor_repo_branch https://github.com/$env:appveyor_repo_name.git $env:appveyor_build_folder
-        git checkout -qf $env:appveyor_repo_commit
-      } else {
-        git clone -q https://github.com/$env:appveyor_repo_name.git $env:appveyor_build_folder
-        git fetch -q origin +refs/pull/$env:appveyor_pull_request_number/merge:
-        git checkout -qf FETCH_HEAD
-      }
-      git submodule update --init --recursive --quiet
-
 install:
+  - git submodule update --init --recursive --quiet
   - IF NOT EXIST "C:\strawberry" cinst strawberryperl
   - IF NOT EXIST "C:\ProgramData\chocolatey\bin\swig.exe" choco install swig --yes --limit-output
   - set PATH=C:\strawberry\perl\bin;C:\strawberry\perl\site\bin;C:\strawberry\c\bin;%PATH%
@@ -31,6 +20,5 @@ install:
 build: off
 
 test_script:
-- dzil test -v
+  - dzil test -v
     
-shallow_clone: true
