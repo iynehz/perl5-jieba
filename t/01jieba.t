@@ -4,11 +4,13 @@ use strict;
 use warnings;
 use utf8;
 
+use Data::Dumper;
 use File::ShareDir qw(dist_file);
 use Lingua::ZH::Jieba;
 use Path::Tiny;
 
 use Test::More;
+use Test::Deep;
 
 my $builder = Test::More->builder;
 binmode $builder->output,         ":encoding(utf8)";
@@ -59,6 +61,28 @@ cut_ok(
 
     cut_ok( $jieba->cut("男默女泪"),
         "男默女泪", "after insert 男默女泪" );
+}
+
+{
+    my $sentence =
+      "我是蓝翔技工拖拉机学院手扶拖拉机专业的。";
+    my $words = $jieba->tag($sentence);
+    is_deeply(
+        $words,
+        [
+            [ "我",             "r" ],
+            [ "是",             "v" ],
+            [ "蓝翔",          "nz" ],
+            [ "技工",          "n" ],
+            [ "拖拉机",       "n" ],
+            [ "学院",          "n" ],
+            [ "手扶拖拉机", "n" ],
+            [ "专业",          "n" ],
+            [ "的",             "uj" ],
+            [ "。",             "x" ],
+        ],
+        "part-of-speech tagging"
+    );
 }
 
 # custom data

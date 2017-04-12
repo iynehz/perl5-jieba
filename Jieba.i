@@ -5,10 +5,57 @@
 
 %include <std_string.i>
 %include <std_vector.i>
+//%include <std_pair.i>
 
 namespace std {
-    %template(vectors) vector<string>;
+    %template(vector_s) vector<string>;
+    %template(vector_wordpos) vector<pair<string, string> >;
+//    %template(pair_ss) pair<string, string>;
 };
+
+%{
+
+void SwigSvFromStringPair(SV* sv, const std::pair<std::string, std::string>& p) {
+    SV **svs = new SV*[2];
+
+    svs[0] = sv_newmortal();
+    SwigSvFromString(svs[0], p.first);
+    svs[1] = sv_newmortal();
+    SwigSvFromString(svs[1], p.second);
+
+    AV *myav = av_make(2, svs);
+    delete[] svs; 
+
+    sv_setsv(sv, newRV_noinc((SV*) myav));
+}
+
+// This is now a dummy function, and we would never use it.
+std::pair<std::string, std::string> SwigSvToStringPair(SV* sv) {
+    pair<std::string, std::string> pairs;
+    return pairs;
+}
+
+%}
+
+namespace std {
+// dont know why but specialize_std_vector would hang
+//    specialize_std_vector((std::pair<std::string, std::string>), SvROK, SwigSvToStringPair, SwigSvFromStringPair);
+
+    %typemap(out) vector<pair<string, string> > {
+        size_t len = $1.size();
+        SV **svs = new SV*[len];
+        for (size_t i=0; i<len; i++) {
+            svs[i] = sv_newmortal();
+            SwigSvFromStringPair(svs[i], $1[i]);
+        }
+        AV *myav = av_make(len, svs);
+        delete[] svs;
+        $result = newRV_noinc((SV*) myav);
+        sv_2mortal($result);
+        argvi++;
+    }
+}
+
 
 %include "JiebaPerl.hpp"
 
@@ -49,6 +96,16 @@ sub cut_for_search {
     
     for (@$words) {
         utf8::decode($_);
+    }
+    return $words;
+}
+
+sub tag {
+    my ($self, $sentence) = @_;
+
+    my $words = $self->_tag($sentence);
+    for (@$words) {
+        utf8::decode($_->[0]);
     }
     return $words;
 }

@@ -11,32 +11,39 @@ Lingua::ZH::Jieba - Perl wrapper for CppJieba (Chinese text segmentation)
     
     my $jieba = Lingua::ZH::Jieba->new();
 
-    # default cut
+    # default cut (切词，MP/HMM混合方法)
     my $words = $jieba->cut("他来到了网易杭研大厦");
     print join('/', @$words), "\n";
     # 他/来到/了/网易/杭研/大厦
 
-    # cut without HMM
+    # cut without HMM (切词，MP方法)
     my $words_nohmm = $jieba->cut(
         "他来到了网易杭研大厦",
         { no_hmm => 1 } );
     print join('/', @$words_nohmm), "\n";
     # 他/来到/了/网易/杭/研/大厦
 
-    # cut all
+    # cut all (Full方法，切出所有词典里的词语)
     my $words_cutall = $jieba->cut(
         "我来到北京清华大学",
         { cut_all => 1 } );
     print join('/', @$words_cutall), "\n";
     # 我/来到/北京/清华/清华大学/华大/大学
 
-    # cut for search
+    # cut for search (先用Mix方法切词，对于切出的较长词再用Full方法)
     my $words_cut4search = $jieba->cut_for_search(
         "小明硕士毕业于中国科学院计算所，后在日本京都大学深造" );
     print join('/', @$words_cut4search), "\n";
     # 小明/硕士/毕业/于/中国/科学/学院/科学院/中国科学院/计算/计算所/，/后/在/日本/京都/大学/日本京都大学/深造
 
-    # insert user word
+    # part-of-speech tagging (词性标注)
+    my $word_pos_tags = $self->tag($sentence);
+    for my $pair (@$word_pos_tags) {
+        my ($word, $part_of_speech) = @$pair;
+        ...
+    }
+
+    # insert user word (动态增加用户词)
     my $words_before_insert = $jieba->cut("男默女泪");
     print join('/', @$words_before_insert), "\n";
     # 男默/女泪
@@ -88,23 +95,34 @@ installation. But it's possible to override any of the data files like below.
 
 =head2 cut
 
-    $words = $self->cut($sentence);
+    my $words = $self->cut($sentence);
 
 Default cut mode. Returns an arrayref of utf8 strings of words cut from
 the sentence.
 
-    $words = $self->cut($sentence, { no_hmm => 1 });
+    my $words = $self->cut($sentence, { no_hmm => 1 });
 
 Cut without HMM mode.
 
-    $words = $self->cut($sentence, { cut_all => 1 });
+    my $words = $self->cut($sentence, { cut_all => 1 });
 
 Cut all possible words in dictionary.
 
 =head2 cut_for_search
 
-    $words = $self->cut_for_search($sentence);
-    $words = $self->cut_for_search($sentence, { no_hmm => 1 });
+    my $words = $self->cut_for_search($sentence);
+    my $words_nohmm = $self->cut_for_search($sentence, { no_hmm => 1 });
+
+=head2 tag
+
+part-of-speech tagging. Returns an arrayref of which each element is in
+the form of C<[ $word, $part_of_speech ]>.
+
+    my $word_pos_tags = $self->tag($sentence);
+    for my $pair (@$word_pos_tags) {
+        my ($word, $part_of_speech) = @$pair;
+        ...
+    }
 
 =head2 insert_user_word
 

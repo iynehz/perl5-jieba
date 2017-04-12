@@ -37,6 +37,12 @@ namespace perljieba {
             bool insert_user_word(const string& word, const string& tag = "") {
                 return jieba_.InsertUserWord(word, tag);
             }
+
+            vector<pair<string, string> > _tag(const string& sentence) {
+                vector<pair<string, string> > words;
+                jieba_.Tag(sentence, words);
+                return words;
+            }
             
         private:
             cppjieba::Jieba jieba_;
