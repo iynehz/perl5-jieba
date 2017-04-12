@@ -42,8 +42,14 @@ Lingua::ZH::Jieba - Perl wrapper for CppJieba (Chinese text segmentation)
     my $word_pos_tags = $self->tag($sentence);
     for my $pair (@$word_pos_tags) {
         my ($word, $part_of_speech) = @$pair;
-        ...
+        print "$word:$part_of_speech\n";
     }
+    # 我:r
+    # 是:v
+    # 蓝翔:nz
+    # 技工:n
+    # 拖拉机:n
+    # ...
 
     # insert user word (动态增加用户词)
     my $words_before_insert = $jieba->cut("男默女泪");
@@ -144,6 +150,11 @@ library
 # AUTHORS
 
 Stephan Loyd <stephanloyd9@gmail.com>
+
+# ACKNOWLEDGEMENTS
+
+Thanks to Junyi Sun, and Yanyi Wu. This piece of Perl library would not be
+existing without their work on jieba and CppJieba. 
 
 # COPYRIGHT AND LICENSE
 
