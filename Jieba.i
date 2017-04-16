@@ -10,6 +10,7 @@
 namespace std {
     %template(vector_s) vector<string>;
     %template(vector_wordpos) vector<pair<string, string> >;
+    %template(vector_keyword) vector<pair<string, double> >;
 //    %template(pair_ss) pair<string, string>;
 };
 
@@ -35,6 +36,20 @@ std::pair<std::string, std::string> SwigSvToStringPair(SV* sv) {
     return pairs;
 }
 
+void SwigSvFromStringDoublePair(SV* sv, const std::pair<std::string, double>& p) {
+    SV **svs = new SV*[2];
+
+    svs[0] = sv_newmortal();
+    SwigSvFromString(svs[0], p.first);
+    svs[1] = sv_newmortal();
+    sv_setnv(svs[1], p.second);
+
+    AV *myav = av_make(2, svs);
+    delete[] svs; 
+
+    sv_setsv(sv, newRV_noinc((SV*) myav));
+}
+
 %}
 
 namespace std {
@@ -54,12 +69,43 @@ namespace std {
         sv_2mortal($result);
         argvi++;
     }
+
+    %typemap(out) vector<pair<string, double> > {
+        size_t len = $1.size();
+        SV **svs = new SV*[len];
+        for (size_t i=0; i<len; i++) {
+            svs[i] = sv_newmortal();
+            SwigSvFromStringDoublePair(svs[i], $1[i]);
+        }
+        AV *myav = av_make(len, svs);
+        delete[] svs;
+        $result = newRV_noinc((SV*) myav);
+        sv_2mortal($result);
+        argvi++;
+    }
 }
 
 
 %include "JiebaPerl.hpp"
 
 %perlcode %{
+
+package Lingua::ZH::Jieba::KeywordExtractor;
+use strict;
+use warnings;
+use utf8;
+
+sub extract {
+    my ($self, $sentence, $top_n) = @_;
+
+    my $words = $self->_extract($sentence, $top_n);
+
+    for (@$words) {
+        utf8::decode($_->[0]);
+    }
+    return $words;
+}
+
 
 package Lingua::ZH::Jieba::Jieba;
 use strict;

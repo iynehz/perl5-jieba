@@ -63,6 +63,7 @@ cut_ok(
         "男默女泪", "after insert 男默女泪" );
 }
 
+# part-of-speech tagging
 {
     my $sentence =
       "我是蓝翔技工拖拉机学院手扶拖拉机专业的。";
@@ -82,6 +83,29 @@ cut_ok(
             [ "。",             "x" ],
         ],
         "part-of-speech tagging"
+    );
+}
+
+# keyword extractor
+{
+    my $extractor = $jieba->extractor();
+    my $sentence =
+"我是拖拉机学院手扶拖拉机专业的。不用多久，我就会升职加薪，当上CEO，走上人生巅峰。";
+    my $word_scores = $extractor->extract( $sentence, 5 );
+    for (@$word_scores) {
+        $_->[1] = sprintf( "%.3f", $_->[1] );
+    }
+
+    is_deeply(
+        $word_scores,
+        [
+            [ "CEO",             11.739 ],
+            [ "升职",          10.856 ],
+            [ "加薪",          10.643 ],
+            [ "手扶拖拉机", 10.009 ],
+            [ "巅峰",          '9.494' ],
+        ],
+        "extractor->extract()"
     );
 }
 

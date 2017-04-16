@@ -37,7 +37,7 @@ Lingua::ZH::Jieba - Perl wrapper for CppJieba (Chinese text segmentation)
     # 小明/硕士/毕业/于/中国/科学/学院/科学院/中国科学院/计算/计算所/，/后/在/日本/京都/大学/日本京都大学/深造
 
     # part-of-speech tagging (词性标注)
-    my $word_pos_tags = $self->tag($sentence);
+    my $word_pos_tags = $jieba->tag("我是蓝翔技工拖拉机学院手扶拖拉机专业的。");
     for my $pair (@$word_pos_tags) {
         my ($word, $part_of_speech) = @$pair;
         print "$word:$part_of_speech\n";
@@ -48,6 +48,22 @@ Lingua::ZH::Jieba - Perl wrapper for CppJieba (Chinese text segmentation)
     # 技工:n
     # 拖拉机:n
     # ...
+
+    # keyword extraction (关键词提取)
+    my $extractor = $jieba->extractor();
+    my $word_score = $extractor->extract(
+        "我是拖拉机学院手扶拖拉机专业的。不用多久，我就会升职加薪，当上CEO，走上人生巅峰。",
+        5
+    );
+    for my $pair (@$word_scores) {
+        my ($word, $score) = @$pair;
+        printf "%s:%.3f\n", $word, $score;
+    }
+    # CEO:11.739
+    # 升职:10.856
+    # 加薪:10.643
+    # 手扶拖拉机:10.009
+    # 巅峰:9.494
 
     # insert user word (动态增加用户词)
     my $words_before_insert = $jieba->cut("男默女泪");
@@ -101,40 +117,47 @@ installation. But it's possible to override any of the data files like below.
 
 =head2 cut
 
-    my $words = $self->cut($sentence);
+    my $words = $jieba->cut($sentence);
 
 Default cut mode. Returns an arrayref of utf8 strings of words cut from
 the sentence.
 
-    my $words = $self->cut($sentence, { no_hmm => 1 });
+    my $words = $jieba->cut($sentence, { no_hmm => 1 });
 
 Cut without HMM mode.
 
-    my $words = $self->cut($sentence, { cut_all => 1 });
+    my $words = $jieba->cut($sentence, { cut_all => 1 });
 
 Cut all possible words in dictionary.
 
 =head2 cut_for_search
 
-    my $words = $self->cut_for_search($sentence);
-    my $words_nohmm = $self->cut_for_search($sentence, { no_hmm => 1 });
+    my $words = $jieba->cut_for_search($sentence);
+    my $words_nohmm = $jieba->cut_for_search($sentence, { no_hmm => 1 });
 
 =head2 tag
 
-part-of-speech tagging. Returns an arrayref of which each element is in
-the form of C<[ $word, $part_of_speech ]>.
-
-    my $word_pos_tags = $self->tag($sentence);
+    my $word_pos_tags = $jieba->tag($sentence);
     for my $pair (@$word_pos_tags) {
         my ($word, $part_of_speech) = @$pair;
         ...
     }
 
+part-of-speech tagging. Returns an arrayref of which each element is in
+the form of C<[ $word, $part_of_speech ]>.
+
 =head2 insert_user_word
 
-    $self->insert_user_word($word);
+    $jieba->insert_user_word($word);
 
 Dynamically inserts a user word.
+
+=head2 extractor
+    
+    my $extractor = $jieba->extractor();
+    
+Get the keyword extractor object. For more about the extractor, see
+L<Lingua::ZH::Jieba::KeywordExtractor>.
 
 =head1 SEE ALSO
 
