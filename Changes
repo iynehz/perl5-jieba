@@ -1,5 +1,8 @@
 Revision history for Lingua::ZH::Jieba
 
+0.003 - 2017-04-16
+    - Support keyword extractor.
+
 0.002 - 2017-04-12
     - Support part-of-speech tagging.
 
