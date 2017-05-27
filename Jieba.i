@@ -1,17 +1,31 @@
 %module "Lingua::ZH::Jieba"
+
 %{
 #include "JiebaPerl.hpp" 
 %}
 
 %include <std_string.i>
 %include <std_vector.i>
-//%include <std_pair.i>
+
+/* We only use native Perl data structure, so there is actually no need
+   for the std::vector methods.
+*/
+
+%ignore std::vector<pair<string, string> >::set;
+%ignore std::vector<pair<string, string> >::get;
+%ignore std::vector<pair<string, string> >::pop;
+%ignore std::vector<pair<string, string> >::push;
+
+%ignore std::vector<pair<string, double> >::set;
+%ignore std::vector<pair<string, double> >::get;
+%ignore std::vector<pair<string, double> >::pop;
+%ignore std::vector<pair<string, double> >::push;
 
 namespace std {
     %template(vector_s) vector<string>;
     %template(vector_wordpos) vector<pair<string, string> >;
     %template(vector_keyword) vector<pair<string, double> >;
-//    %template(pair_ss) pair<string, string>;
+    %template(vector_word) vector<perljieba::Word >;
 };
 
 %{
@@ -50,6 +64,23 @@ void SwigSvFromStringDoublePair(SV* sv, const std::pair<std::string, double>& p)
     sv_setsv(sv, newRV_noinc((SV*) myav));
 }
 
+void SwigSvFromWord(SV* sv, const perljieba::Word& w) {
+    SV **svs = new SV*[3];
+
+    svs[0] = sv_newmortal();
+    SwigSvFromString(svs[0], w.word);
+    svs[1] = sv_newmortal();
+    sv_setnv(svs[1], w.offset);
+    svs[2] = sv_newmortal();
+    sv_setnv(svs[2], w.length);
+
+    AV *myav = av_make(3, svs);
+    delete[] svs; 
+
+    sv_setsv(sv, newRV_noinc((SV*) myav));
+}
+
+
 %}
 
 namespace std {
@@ -83,10 +114,25 @@ namespace std {
         sv_2mortal($result);
         argvi++;
     }
+
+    %typemap(out) vector<perljieba::Word> {
+        size_t len = $1.size();
+        SV **svs = new SV*[len];
+        for (size_t i=0; i<len; i++) {
+            svs[i] = sv_newmortal();
+            SwigSvFromWord(svs[i], $1[i]);
+        }
+        AV *myav = av_make(len, svs);
+        delete[] svs;
+        $result = newRV_noinc((SV*) myav);
+        sv_2mortal($result);
+        argvi++;
+    }
 }
 
 
 %include "JiebaPerl.hpp"
+
 
 %perlcode %{
 
@@ -112,38 +158,73 @@ use strict;
 use warnings;
 use utf8;
 
-sub cut {
-    my ($self, $sentence, $opts) = @_;
+sub _make_cut {
+    my $want_position = shift;
+
+    return sub {
+        my ($self, $sentence, $opts) = @_;
+        
+        $opts ||= {};
+        my $no_hmm = $opts->{no_hmm};
+        my $cut_all = $opts->{cut_all};
+        
+        my $words;
+        
+        if ($want_position) {
+            if ($cut_all) {
+                $words = $self->_cut_all_ex($sentence);
+            } else {
+                $words = $self->_cut_ex($sentence, !$no_hmm);
+            }
+            for (@$words) {
+                utf8::decode($_->[0]);
+            }
+        } else {
+            if ($cut_all) {
+                $words = $self->_cut_all($sentence);
+            } else {
+                $words = $self->_cut($sentence, !$no_hmm);
+            }
+            for (@$words) {
+                utf8::decode($_);
+            }
+        }
     
-    $opts ||= {};
-    my $no_hmm = $opts->{no_hmm};
-    my $cut_all = $opts->{cut_all};
-    
-    my $words;
-    if ($cut_all) {
-        $words = $self->_cut_all($sentence);
-    } else {
-        $words = $self->_cut($sentence, !$no_hmm);
-    }
-    
-    for (@$words) {
-        utf8::decode($_);
-    }
-    return $words;
+        return $words;
+    };
 }
 
-sub cut_for_search {
-    my ($self, $sentence, $opts) = @_;
+sub _make_cut_for_search {
+    my $want_position = shift;
 
-    $opts ||= {};
-    my $no_hmm = $opts->{no_hmm};
-    
-    my $words = $self->_cut_for_search($sentence, !$no_hmm);
-    
-    for (@$words) {
-        utf8::decode($_);
-    }
-    return $words;
+    return sub {
+        my ($self, $sentence, $opts) = @_;
+
+        $opts ||= {};
+        my $no_hmm = $opts->{no_hmm};
+        
+        my $words;
+        if ($want_position) {
+            $words = $self->_cut_for_search_ex($sentence, !$no_hmm);
+            for (@$words) {
+                utf8::decode($_->[0]);
+            }
+        } else {
+            $words = $self->_cut_for_search($sentence, !$no_hmm);
+            for (@$words) {
+                utf8::decode($_);
+            }
+        }
+        return $words;
+    };
+}
+
+{
+    no strict 'refs';
+    *cut = _make_cut(0);
+    *cut_ex = _make_cut(1);
+    *cut_for_search = _make_cut_for_search(0);
+    *cut_for_search_ex = _make_cut_for_search(1);
 }
 
 sub tag {
