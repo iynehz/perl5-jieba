@@ -185,7 +185,7 @@ Dynamically inserts a user word.
     
 
 Get the keyword extractor object. For more about the extractor, see
-[Lingua::ZH::Jieba::KeywordExtractor](https://metacpan.org/pod/Lingua::ZH::Jieba::KeywordExtractor).
+[Lingua::ZH::Jieba::KeywordExtractor](https://metacpan.org/pod/Lingua%3A%3AZH%3A%3AJieba%3A%3AKeywordExtractor).
 
 # SEE ALSO
 
