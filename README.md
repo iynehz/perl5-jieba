@@ -4,6 +4,10 @@
 
 Lingua::ZH::Jieba - Perl wrapper for CppJieba (Chinese text segmentation)
 
+# VERSION
+
+version 0.006
+
 # SYNOPSIS
 
 ```perl
@@ -204,7 +208,6 @@ Dynamically inserts a user word.
 
 ```perl
 my $extractor = $jieba->extractor();
-
 ```
 
 Get the keyword extractor object. For more about the extractor, see
@@ -219,20 +222,18 @@ library
 
 [http://www.swig.org](http://www.swig.org) - SWIG, the Simplified Wrapper and Interface Generator
 
-# AUTHORS
-
-Stephan Loyd <stephanloyd9@gmail.com>
-
 # ACKNOWLEDGEMENTS
 
 Thanks to Junyi Sun, and Yanyi Wu. This piece of Perl library would not be
 existing without their work on jieba and CppJieba. 
 
+# AUTHOR
+
+Stephan Loyd <stephanloyd9@gmail.com>
+
 # COPYRIGHT AND LICENSE
 
-CppJieba is copyright by YanYi Wu under the MIT license. Visit
-[https://yanyiwu.mit-license.org/](https://yanyiwu.mit-license.org/) for a copy of the license.
+This software is copyright (c) 2017-2023 by Stephan Loyd.
 
-The Perl extension of CppJieba is copyright (c) 2017 by Stephan Loyd.
-This is free software; you can redistribute it and/or modify it under the
-same terms as Perl itself.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
