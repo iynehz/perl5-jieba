@@ -136,10 +136,12 @@ namespace std {
 
 %perlcode %{
 
-package Lingua::ZH::Jieba::KeywordExtractor;
+use 5.010;
 use strict;
 use warnings;
 use utf8;
+
+package Lingua::ZH::Jieba::KeywordExtractor;
 
 sub extract {
     my ($self, $sentence, $top_n) = @_;
@@ -154,9 +156,6 @@ sub extract {
 
 
 package Lingua::ZH::Jieba::Jieba;
-use strict;
-use warnings;
-use utf8;
 
 sub _make_cut {
     my $want_position = shift;
@@ -239,11 +238,6 @@ sub tag {
 
 
 package Lingua::ZH::Jieba;
-# ABSTRACT: Perl wrapper for CppJieba (Chinese text segmentation)
-use 5.010;
-use strict;
-use warnings;
-use utf8;
 
 use File::ShareDir qw(dist_file);
 
