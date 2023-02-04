@@ -1,4 +1,4 @@
-[![Actions Status](https://github.com/stphnlyd/perl5-jieba/actions/workflows/ci.yml/badge.svg)](https://github.com/stphnlyd/perl5-jieba/actions)
+[![Actions Status](https://github.com/iynehz/perl5-jieba/actions/workflows/ci.yml/badge.svg)](https://github.com/iynehz/perl5-jieba/actions)
 
 # NAME
 
@@ -6,7 +6,7 @@ Lingua::ZH::Jieba - Perl wrapper for CppJieba (Chinese text segmentation)
 
 # VERSION
 
-version 0.006
+version 0.007
 
 # SYNOPSIS
 
